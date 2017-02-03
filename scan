@@ -1,0 +1,12 @@
+#!/bin/bash
+rm good no_auth other
+while read ip host ; do
+    status=$(ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o BatchMode=yes -o ConnectTimeout=2 tortuga@$ip echo ok 2>&1)
+    if [[ $status == ok ]] ; then
+        echo $ip $host >> good
+    elif [[ $status == "Permission denied"* ]] ; then
+        echo $ip $host $status >> no_auth
+    else
+        echo $ip $host $status >> other
+    fi
+done < $1
